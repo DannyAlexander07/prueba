@@ -21,7 +21,7 @@
       <label>Contraseña</label>
       <input id="campoContrasena" class="campo-credencial" type="password" value="admin123" />
     </div>
-    <button onclick="iniciarSesion()">Obtener Token</button>
+    <button id="botonToken">Obtener Token</button>
     <span id="estadoToken" class="etiqueta">sin token</span>
   </div>
 </div>
@@ -29,13 +29,13 @@
 <div class="tarjeta">
   <h2>2. Ingresar Matriz</h2>
   <div class="fila-formulario">
-    <div><label>Filas (m)</label><input type="number" id="cantidadFilas" value="3" min="1" max="8" onchange="construirGrilla()" /></div>
-    <div><label>Columnas (n)</label><input type="number" id="cantidadColumnas" value="3" min="1" max="8" onchange="construirGrilla()" /></div>
-    <button class="secundario" onclick="rellenarAleatorio()">Valores aleatorios</button>
+    <div><label>Filas (m)</label><input type="number" id="cantidadFilas" value="3" min="1" max="8" /></div>
+    <div><label>Columnas (n)</label><input type="number" id="cantidadColumnas" value="3" min="1" max="8" /></div>
+    <button id="botonAleatorio" class="secundario">Valores aleatorios</button>
   </div>
   <div id="grillaMatriz" class="grilla-matriz"></div>
   <div class="acciones-factorizacion">
-    <button id="botonFactorizar" onclick="ejecutarFactorizacion()" disabled>Factorizar</button>
+    <button id="botonFactorizar" disabled>Factorizar</button>
     <span id="cargando" class="oculto">calculando...</span>
   </div>
 </div>
@@ -71,174 +71,6 @@
 </div>
 
 <script src="config.js"></script>
-<script>
-  const API_GO = window.API_GO_URL || 'http://localhost:8080';
-  let tokenJWT = '';
-
-  // Pide un token a la API Go usando las credenciales de prueba.
-  async function iniciarSesion() {
-    const usuario    = document.getElementById('campoUsuario').value;
-    const contrasena = document.getElementById('campoContrasena').value;
-    const etiqueta   = document.getElementById('estadoToken');
-
-    try {
-      const respuesta = await fetch(`${API_GO}/api/auth/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, contrasena }),
-      });
-      const datos = await respuesta.json();
-      if (!respuesta.ok) throw new Error(datos.error || respuesta.statusText);
-
-      tokenJWT = datos.token;
-      etiqueta.textContent = 'token OK';
-      etiqueta.className = 'etiqueta bien';
-      document.getElementById('botonFactorizar').disabled = false;
-      mostrarEstado('Token JWT obtenido correctamente.', 'bien');
-    } catch (err) {
-      etiqueta.textContent = 'error';
-      etiqueta.className = 'etiqueta mal';
-      mostrarEstado('Error al autenticar: ' + err.message, 'mal');
-    }
-  }
-
-  // Construye los campos de la matriz según filas y columnas.
-  function construirGrilla() {
-    const m = parseInt(document.getElementById('cantidadFilas').value) || 3;
-    const n = parseInt(document.getElementById('cantidadColumnas').value) || 3;
-    const grilla = document.getElementById('grillaMatriz');
-    grilla.style.gridTemplateColumns = `repeat(${n}, auto)`;
-    grilla.innerHTML = '';
-    for (let i = 0; i < m; i++) {
-      for (let j = 0; j < n; j++) {
-        const celda = document.createElement('input');
-        celda.type = 'number';
-        celda.step = 'any';
-        celda.value = '0';
-        celda.id = `celda_${i}_${j}`;
-        grilla.appendChild(celda);
-      }
-    }
-  }
-
-  function obtenerMatriz() {
-    const m = parseInt(document.getElementById('cantidadFilas').value);
-    const n = parseInt(document.getElementById('cantidadColumnas').value);
-    return Array.from({ length: m }, (_, i) =>
-      Array.from({ length: n }, (_, j) =>
-        parseFloat(document.getElementById(`celda_${i}_${j}`).value) || 0
-      )
-    );
-  }
-
-  function establecerMatriz(datos) {
-    document.getElementById('cantidadFilas').value = datos.length;
-    document.getElementById('cantidadColumnas').value = datos[0].length;
-    construirGrilla();
-    datos.forEach((fila, i) =>
-      fila.forEach((v, j) => { document.getElementById(`celda_${i}_${j}`).value = v; })
-    );
-  }
-
-  function rellenarAleatorio() {
-    const m = parseInt(document.getElementById('cantidadFilas').value) || 3;
-    const n = parseInt(document.getElementById('cantidadColumnas').value) || 3;
-    establecerMatriz(
-      Array.from({ length: m }, () =>
-        Array.from({ length: n }, () => Math.round((Math.random() * 20 - 10) * 10) / 10)
-      )
-    );
-  }
-
-  // Envía la matriz a la API Go y muestra la respuesta.
-  async function ejecutarFactorizacion() {
-    const matriz = obtenerMatriz();
-    const cargando = document.getElementById('cargando');
-    cargando.classList.remove('oculto');
-    document.getElementById('botonFactorizar').disabled = true;
-    document.getElementById('panelResultados').classList.add('oculto');
-
-    try {
-      const respuesta = await fetch(`${API_GO}/api/factorizar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${tokenJWT}`,
-        },
-        body: JSON.stringify({ matriz }),
-      });
-      const datos = await respuesta.json();
-      if (!respuesta.ok) throw new Error(datos.error || respuesta.statusText);
-
-      mostrarResultados(datos);
-      mostrarEstado('Factorización completada con éxito.', 'bien');
-    } catch (err) {
-      mostrarEstado('Error: ' + err.message, 'mal');
-    } finally {
-      cargando.classList.add('oculto');
-      document.getElementById('botonFactorizar').disabled = false;
-    }
-  }
-
-  // Dibuja las matrices y las estadísticas en pantalla.
-  function renderizarMatriz(idContenedor, matriz) {
-    if (!matriz || matriz.length === 0) return;
-    const columnas = matriz[0].length;
-    let html = '<table><thead><tr><th></th>';
-    for (let j = 0; j < columnas; j++) html += `<th>col ${j}</th>`;
-    html += '</tr></thead><tbody>';
-    matriz.forEach((fila, i) => {
-      html += `<tr><th>fila ${i}</th>`;
-      fila.forEach(v => html += `<td>${typeof v === 'number' ? v.toFixed(6) : v}</td>`);
-      html += '</tr>';
-    });
-    html += '</tbody></table>';
-    document.getElementById(idContenedor).innerHTML = html;
-  }
-
-  function mostrarResultados(datos) {
-    renderizarMatriz('tablaQ', datos.Q);
-    renderizarMatriz('tablaR', datos.R);
-
-    document.getElementById('dimensionesQ').textContent =
-      datos.Q ? `(${datos.Q.length} x ${datos.Q[0].length})` : '';
-    document.getElementById('dimensionesR').textContent =
-      datos.R ? `(${datos.R.length} x ${datos.R[0].length})` : '';
-
-    const e = datos.estadisticas;
-    const c = e.combinado || {};
-    const items = [
-      ['Valor máximo', c.valor_maximo],
-      ['Valor mínimo', c.valor_minimo],
-      ['Promedio',     c.promedio],
-      ['Suma total',   c.suma_total],
-    ];
-    document.getElementById('listaEstadisticas').innerHTML = items
-      .map(([etiqueta, valor]) =>
-        `<li><span>${etiqueta}</span><strong>${typeof valor === 'number' ? valor.toFixed(6) : valor}</strong></li>`
-      ).join('');
-
-    const qDiag = e.Q && e.Q.es_diagonal;
-    const rDiag = e.R && e.R.es_diagonal;
-
-    const crearEtiqueta = (id, valor) =>
-      `<span id="${id}" class="etiqueta ${valor ? 'bien' : 'mal'}">${valor ? 'Sí' : 'No'}</span>`;
-
-    document.getElementById('qEsDiagonal').outerHTML = crearEtiqueta('qEsDiagonal', qDiag);
-    document.getElementById('rEsDiagonal').outerHTML = crearEtiqueta('rEsDiagonal', rDiag);
-
-    document.getElementById('panelResultados').classList.remove('oculto');
-  }
-
-  function mostrarEstado(mensaje, tipo) {
-    const el = document.getElementById('mensajeEstado');
-    el.textContent = mensaje;
-    el.className = tipo;
-  }
-
-  // Deja la pantalla lista con valores de prueba.
-  construirGrilla();
-  rellenarAleatorio();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -227,7 +227,13 @@ button.secundario:hover {
 table {
   border-collapse: collapse;
   width: 100%;
+  min-width: 420px;
   font-size: 0.8rem;
+}
+
+.tabla-scroll {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 th,
@@ -287,4 +293,83 @@ td {
   font-size: 0.75rem;
   color: var(--apagado);
   margin-left: 8px;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 1.35rem;
+    margin-bottom: 16px;
+  }
+
+  .tarjeta {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .fila-formulario {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .campo-credencial,
+  input[type=number],
+  button {
+    width: 100%;
+  }
+
+  .acciones-factorizacion {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .grilla-matriz {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .grilla-matriz input {
+    width: 56px;
+    min-width: 56px;
+  }
+
+  .lista-estadisticas {
+    grid-template-columns: 1fr;
+  }
+
+  .diagonal-resumen {
+    align-items: flex-start;
+    gap: 8px 10px;
+  }
+
+  .separador-diagonal {
+    margin-left: 0;
+  }
+
+  th,
+  td {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 12px;
+  }
+
+  .tarjeta {
+    padding: 14px;
+  }
+
+  .grilla-matriz input {
+    width: 52px;
+    min-width: 52px;
+    padding: 6px 3px;
+  }
 }
