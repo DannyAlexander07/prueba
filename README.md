@@ -41,6 +41,12 @@ Servicios:
 - API Go: `http://localhost:8080`
 - API Node.js: `http://localhost:4000`
 
+## Despliegue en Render
+
+- Frontend: `https://prueba-frontend-ai83.onrender.com`
+- API Go: `https://prueba-go-api.onrender.com`
+- API Node.js: `https://prueba-node-api.onrender.com`
+
 Credenciales de prueba:
 
 ```json
@@ -134,16 +140,19 @@ npm test
 ## Variables de entorno
 
 ### API Go
-Variable ----------- Descripcion 
-`PUERTO`  -- Puerto del servicio Go 
-`URL_API_NODE` -- URL de la API Node.js 
-`SECRETO_JWT` -- Secreto usado para firmar y validar JWT 
+
+| Variable | Descripcion |
+| --- | --- |
+| `PUERTO` o `PORT` | Puerto del servicio Go |
+| `URL_API_NODE` | URL de la API Node.js |
+| `SECRETO_JWT` | Secreto usado para firmar y validar JWT |
 
 ### API Node.js
 
-Variable -------- Descripcion 
-`PUERTO` o `PORT` -- Puerto del servicio Node.js 
-`SECRETO_JWT` -- Secreto usado para validar JWT 
+| Variable | Descripcion |
+| --- | --- |
+| `PUERTO` o `PORT` | Puerto del servicio Node.js |
+| `SECRETO_JWT` | Secreto usado para validar JWT |
 
 ## Despliegue
 
@@ -170,3 +179,9 @@ const API_GO = window.API_GO_URL || 'http://localhost:8080';
 ```
 
 Para despliegue en nube, `window.API_GO_URL` debe apuntar a la URL publica de la API Go.
+
+En este despliegue se configuro en `frontend/config.js`:
+
+```js
+window.API_GO_URL = 'https://prueba-go-api.onrender.com';
+```
