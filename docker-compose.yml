@@ -1,0 +1,47 @@
+# Orquesta los tres servicios: API Go, API Node.js y el Frontend
+services:
+
+  api-go:
+    build:
+      context: ./go-api
+    container_name: api-go
+    ports:
+      - "8080:8080"
+    environment:
+      PUERTO: "8080"
+      URL_API_NODE: "http://api-node:3000"
+      SECRETO_JWT: "cambia-este-secreto-en-produccion"
+    depends_on:
+      - api-node
+    networks:
+      - red-apis
+    restart: unless-stopped
+
+  api-node:
+    build:
+      context: ./node-api
+    container_name: api-node
+    ports:
+      - "4000:3000"
+    environment:
+      PUERTO: "3000"
+      SECRETO_JWT: "cambia-este-secreto-en-produccion"
+    networks:
+      - red-apis
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    ports:
+      - "8000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - api-go
+    networks:
+      - red-apis
+
+networks:
+  red-apis:
+    driver: bridge

@@ -1,0 +1,27 @@
+{
+  "name": "api-estadisticas-node",
+  "version": "1.0.0",
+  "description": "API de estadísticas para resultados de factorización QR",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "iniciar": "node src/app.js",
+    "desarrollo": "nodemon src/app.js",
+    "pruebas": "jest --coverage"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__pruebas__/**/*.prueba.js"]
+  }
+}
