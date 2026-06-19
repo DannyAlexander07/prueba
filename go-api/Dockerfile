@@ -11,7 +11,7 @@ COPY . .
 # Compilamos el binario estático para Linux
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o servidor .
 
-# Imagen final mínima (sin el compilador de Go)
+# Imagen final sin el compilador de GO
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/

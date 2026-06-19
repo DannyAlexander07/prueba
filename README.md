@@ -5,17 +5,17 @@ Proyecto desarrollado con dos APIs REST y un frontend simple para probar el fluj
 ## Estructura
 
 - `go-api`: API en Go con Fiber. Recibe una matriz rectangular, calcula la factorizacion QR y solicita estadisticas a la API Node.js.
-- `node-api`: API en Node.js con Express. Recibe las matrices `Q` y `R`, calcula estadisticas y valida si alguna matriz es diagonal.
+- `node-api`: API en Node.js con Express. Recibe las matrices Q y R, calcula estadisticas y valida si alguna matriz es diagonal.
 - `frontend`: interfaz HTML/CSS para autenticacion, entrada de matriz y visualizacion de resultados.
 
 ## Flujo
 
 1. El frontend solicita un token JWT a la API Go.
 2. El frontend envia una matriz a la API Go.
-3. La API Go valida la matriz y calcula `Q` y `R`.
-4. La API Go envia `Q` y `R` a la API Node.js mediante HTTP.
+3. La API Go valida la matriz y calcula Q y R.
+4. La API Go envia Q y R a la API Node.js mediante HTTP.
 5. La API Node.js calcula las estadisticas.
-6. La API Go responde al frontend con la matriz original, `Q`, `R` y las estadisticas.
+6. La API Go responde al frontend con la matriz original, Q, R y las estadisticas.
 
 ## Tecnologias
 
@@ -140,19 +140,16 @@ npm test
 ## Variables de entorno
 
 ### API Go
-
-| Variable | Descripcion |
-| --- | --- |
-| `PUERTO` o `PORT` | Puerto del servicio Go |
-| `URL_API_NODE` | URL de la API Node.js |
-| `SECRETO_JWT` | Secreto usado para firmar y validar JWT |
+Variable - Descripcion 
+`PUERTO` - Puerto del servicio Go 
+`URL_API_NODE` - URL de la API Node.js 
+`SECRETO_JWT` - Secreto usado para firmar y validar JWT 
 
 ### API Node.js
 
-| Variable | Descripcion |
-| --- | --- |
-| `PUERTO` o `PORT` | Puerto del servicio Node.js |
-| `SECRETO_JWT` | Secreto usado para validar JWT |
+Variable - Descripcion 
+`PUERTO`- Puerto del servicio Node.js 
+`SECRETO_JWT` - Secreto usado para validar JWT 
 
 ## Despliegue
 

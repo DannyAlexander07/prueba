@@ -11,7 +11,7 @@ type PeticionMatriz struct {
 }
 
 // GenerarToken valida credenciales simples de demostración y devuelve un JWT.
-// En un entorno real estas credenciales deberían venir de una base de datos.
+// En un entorno real estas credenciales deberían venir de una base de datos pero por ahora lo coloco aqui.
 func GenerarToken(c *fiber.Ctx) error {
 	var body struct {
 		Usuario    string `json:"usuario"`
